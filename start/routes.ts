@@ -24,4 +24,10 @@ Route.group(() => {
   Route.group(() => {
     Route.post('/setup-admin', 'SettingsController.storeInitialUser')
   }).prefix('/setting')
+
+  Route.group(() => {
+    Route.group(() => {
+      Route.get('/', 'AuthController.signIn')
+    }).prefix('/sign')
+  }).prefix('/auth')
 }).prefix('/api')
