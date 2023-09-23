@@ -31,4 +31,13 @@ export default class AuthController {
 
     return response.unauthorized()
   }
+
+  public async signOut({ auth }: HttpContextContract) {
+    const user = auth.use('api').user!
+    await auth.use('api').revoke()
+
+    return {
+      ...user.serialize(),
+    }
+  }
 }
