@@ -1,4 +1,5 @@
 import { test } from '@japa/runner'
+import Location from 'App/Models/Location'
 import User from 'App/Models/User'
 
 test.group('Location', () => {
@@ -32,19 +33,19 @@ test.group('Location', () => {
 
   test('Location show', async ({ client, assert }) => {
     const user = await User.findBy('role', 'administrator')
-    const locationToFind = await User.first()
+    const locationToFind = await Location.first()
 
     assert.isTrue(Boolean(user))
     assert.isTrue(Boolean(locationToFind))
 
-    const response = await client.get(`/api/user/${locationToFind!.id}`).loginAs(user!)
+    const response = await client.get(`/api/location/${locationToFind!.id}`).loginAs(user!)
 
     response.assertStatus(200)
   })
 
   test('Location update', async ({ client, assert }) => {
     const user = await User.findBy('role', 'administrator')
-    const locationToFind = await User.first()
+    const locationToFind = await Location.first()
 
     assert.isTrue(Boolean(user))
     assert.isTrue(Boolean(locationToFind))
@@ -58,6 +59,18 @@ test.group('Location', () => {
         latitude: -6.329794007959758,
       })
       .loginAs(user!)
+
+    response.assertStatus(200)
+  })
+
+  test('Location destroy', async ({ client, assert }) => {
+    const user = await User.findBy('role', 'administrator')
+    const locationToFind = await Location.first()
+
+    assert.isTrue(Boolean(user))
+    assert.isTrue(Boolean(locationToFind))
+
+    const response = await client.delete(`/api/location/${locationToFind!.id}`).loginAs(user!)
 
     response.assertStatus(200)
   })

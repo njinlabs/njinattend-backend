@@ -93,4 +93,18 @@ export default class LocationsController {
 
     return location.serialize()
   }
+
+  public async destroy({ params }: HttpContextContract) {
+    const location = await Location.query()
+      .where('id', params.id)
+      .select(
+        '*',
+        Database.st().x('locations.geom').as('longitude'),
+        Database.st().y('locations.geom').as('latitude')
+      )
+      .firstOrFail()
+    await location.delete()
+
+    return location.serialize()
+  }
 }
