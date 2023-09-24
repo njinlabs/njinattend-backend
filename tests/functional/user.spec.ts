@@ -56,4 +56,37 @@ test.group('User', () => {
 
     response.assertStatus(200)
   })
+
+  test('User update', async ({ client, assert }) => {
+    const fakeDrive = await Drive.fake()
+    const fakeAvatar = await file.generatePng('1mb')
+    const user = await User.findBy('role', 'administrator')
+    const userToFind = await User.findBy('role', 'user')
+
+    assert.isTrue(Boolean(user))
+    assert.isTrue(Boolean(userToFind))
+
+    const response = await client
+      .put(`/api/user/${userToFind!.id}`)
+      .fields({
+        registered_number: '2018210068',
+        password: '123456',
+        fullname: 'Akbar Aditama',
+        gender: 'male',
+        birthday: '2000-08-11',
+        department: 'DevOps',
+        role: 'user',
+      })
+      .file('avatar', fakeAvatar.contents, { filename: fakeAvatar.name })
+      .loginAs(user!)
+
+    try {
+      response.assertStatus(200)
+      assert.isTrue(await fakeDrive.exists(fakeAvatar.name))
+
+      Drive.restore()
+    } catch (e) {
+      response.assertStatus(422)
+    }
+  })
 })

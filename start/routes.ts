@@ -33,6 +33,7 @@ Route.group(() => {
   }).prefix('/auth')
 
   Route.group(() => {
+    Route.put('/:id', 'UsersController.update').middleware(['auth:api', 'private:administrator'])
     Route.get('/:id', 'UsersController.show').middleware(['auth:api', 'private:administrator'])
     Route.get('/', 'UsersController.index').middleware(['auth:api', 'private:administrator'])
     Route.post('/', 'UsersController.store').middleware(['auth:api', 'private:administrator'])

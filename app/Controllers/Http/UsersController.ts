@@ -74,4 +74,49 @@ export default class UsersController {
 
     return user.serialize()
   }
+
+  public async update({ request, params }: HttpContextContract) {
+    const user = await User.findOrFail(params.id)
+
+    const {
+      registered_number: registeredNumber,
+      password,
+      fullname,
+      gender,
+      birthday,
+      avatar,
+      department,
+      role,
+    } = await request.validate({
+      schema: schema.create({
+        registered_number: schema.string({}, [
+          rules.unique({
+            table: 'users',
+            column: 'registered_number',
+          }),
+        ]),
+        password: schema.string.optional(),
+        fullname: schema.string(),
+        gender: schema.enum(['male', 'female']),
+        birthday: schema.date(),
+        avatar: schema.file.optional({
+          extnames: ['jpg', 'png'],
+        }),
+        role: schema.enum(['administrator', 'user']),
+        department: schema.string(),
+      }),
+    })
+
+    user.registeredNumber = registeredNumber
+    user.fullname = fullname
+    user.gender = gender as 'male' | 'female'
+    user.birthday = birthday
+    user.role = role as 'administrator' | 'user'
+    user.department = department
+
+    if (password) user.password = password
+    if (avatar) user.avatar = Attachment.fromFile(avatar)
+
+    return user.serialize()
+  }
 }
