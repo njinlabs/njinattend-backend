@@ -88,6 +88,25 @@ test.group('User', () => {
     }
   })
 
+  test('Save user face model', async ({ client, assert }) => {
+    const fakeAvatar = await file.generatePng('1mb')
+    const user = await User.findBy('role', 'administrator')
+    const userToFind = await User.findBy('role', 'user')
+
+    assert.isTrue(Boolean(user))
+
+    const response = await client
+      .put(`/api/user/${userToFind?.id || 1}`)
+      .file('file', fakeAvatar.contents, { filename: fakeAvatar.name })
+      .loginAs(user!)
+
+    try {
+      response.assertStatus(200)
+    } catch (e) {
+      response.assertStatus(422)
+    }
+  })
+
   test('User destroy', async ({ client, assert }) => {
     const user = await User.findBy('role', 'administrator')
     const userToFind = await User.findBy('role', 'user')

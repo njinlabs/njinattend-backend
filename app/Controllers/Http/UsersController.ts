@@ -1,7 +1,12 @@
 import { Attachment } from '@ioc:Adonis/Addons/AttachmentLite'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
+import Database from '@ioc:Adonis/Lucid/Database'
 import User from 'App/Models/User'
+import FaceApi from 'App/Services/FaceApi'
+import Drive from '@ioc:Adonis/Core/Drive'
+import Face from 'App/Models/Face'
+import { cuid } from '@ioc:Adonis/Core/Helpers'
 
 export default class UsersController {
   public async store({ request }: HttpContextContract) {
@@ -127,5 +132,47 @@ export default class UsersController {
     await user.save()
 
     return user.serialize()
+  }
+
+  public async saveFaceModel({ request, params, response }: HttpContextContract) {
+    const user = await User.findOrFail(params.id)
+
+    const { face } = await request.validate({
+      schema: schema.create({
+        face: schema.file({
+          extnames: ['jpg', 'png'],
+        }),
+      }),
+    })
+
+    const faceDescriptor = await FaceApi.tranformToDescriptor(face.tmpPath!)
+    if (!faceDescriptor) return response.unprocessableEntity()
+
+    const faceFile = new Attachment({
+      extname: 'json',
+      mimeType: 'application/json',
+      size: Buffer.from(faceDescriptor.toString()).length,
+      name: `${cuid}.json`,
+    })
+
+    faceFile.isPersisted = true
+
+    return await Database.transaction(async (trx) => {
+      const faceModel = await Face.updateOrCreate(
+        {
+          userId: user.id,
+        },
+        {
+          file: faceFile,
+        },
+        {
+          client: trx,
+        }
+      )
+
+      await Drive.put(faceFile.name, faceDescriptor.toString())
+
+      return faceModel.serialize()
+    })
   }
 }

@@ -1,7 +1,8 @@
 import { DateTime } from 'luxon'
 import Hash from '@ioc:Adonis/Core/Hash'
-import { column, beforeSave, BaseModel } from '@ioc:Adonis/Lucid/Orm'
+import { column, beforeSave, BaseModel, hasOne, HasOne, beforeDelete } from '@ioc:Adonis/Lucid/Orm'
 import { AttachmentContract, attachment } from '@ioc:Adonis/Addons/AttachmentLite'
+import Face from './Face'
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
@@ -31,6 +32,9 @@ export default class User extends BaseModel {
   @column()
   public department: string
 
+  @hasOne(() => Face)
+  public face: HasOne<typeof Face>
+
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
 
@@ -42,5 +46,11 @@ export default class User extends BaseModel {
     if (user.$dirty.password) {
       user.password = await Hash.make(user.password)
     }
+  }
+
+  @beforeDelete()
+  public static async removeFaceModel(user: User) {
+    await user.load('face')
+    await user.face?.delete()
   }
 }

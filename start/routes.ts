@@ -33,6 +33,10 @@ Route.group(() => {
   }).prefix('/auth')
 
   Route.group(() => {
+    Route.put('/:id/face', 'UsersController.saveFaceModel').middleware([
+      'auth:api',
+      'private:administrator',
+    ])
     Route.delete('/:id', 'UsersController.destroy').middleware([
       'auth:api',
       'private:administrator',
