@@ -31,4 +31,8 @@ Route.group(() => {
       Route.delete('/', 'AuthController.signOut').middleware('auth:api')
     }).prefix('/sign')
   }).prefix('/auth')
+
+  Route.group(() => {
+    Route.post('/', 'UsersController.store').middleware(['auth:api', 'private:administrator'])
+  }).prefix('/user')
 }).prefix('/api')
