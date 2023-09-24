@@ -89,4 +89,16 @@ test.group('User', () => {
       response.assertStatus(422)
     }
   })
+
+  test('User destroy', async ({ client, assert }) => {
+    const user = await User.findBy('role', 'administrator')
+    const userToFind = await User.findBy('role', 'user')
+
+    assert.isTrue(Boolean(user))
+    assert.isTrue(Boolean(userToFind))
+
+    const response = await client.delete(`/api/user/${userToFind!.id}`).loginAs(user!)
+
+    response.assertStatus(200)
+  })
 })

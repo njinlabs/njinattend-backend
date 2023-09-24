@@ -33,6 +33,10 @@ Route.group(() => {
   }).prefix('/auth')
 
   Route.group(() => {
+    Route.delete('/:id', 'UsersController.destroy').middleware([
+      'auth:api',
+      'private:administrator',
+    ])
     Route.put('/:id', 'UsersController.update').middleware(['auth:api', 'private:administrator'])
     Route.get('/:id', 'UsersController.show').middleware(['auth:api', 'private:administrator'])
     Route.get('/', 'UsersController.index').middleware(['auth:api', 'private:administrator'])
