@@ -4,7 +4,7 @@ import { file } from '@ioc:Adonis/Core/Helpers'
 import User from 'App/Models/User'
 
 test.group('User', () => {
-  test('Store user', async ({ client, assert }) => {
+  test('User store', async ({ client, assert }) => {
     const fakeDrive = await Drive.fake()
     const fakeAvatar = await file.generatePng('1mb')
     const user = await User.findBy('role', 'administrator')
@@ -35,12 +35,24 @@ test.group('User', () => {
     }
   })
 
-  test('Index user', async ({ client, assert }) => {
+  test('User index', async ({ client, assert }) => {
     const user = await User.findBy('role', 'administrator')
 
     assert.isTrue(Boolean(user))
 
     const response = await client.get('/api/user').loginAs(user!)
+
+    response.assertStatus(200)
+  })
+
+  test('User show', async ({ client, assert }) => {
+    const user = await User.findBy('role', 'administrator')
+    const userToFind = await User.findBy('role', 'user')
+
+    assert.isTrue(Boolean(user))
+    assert.isTrue(Boolean(userToFind))
+
+    const response = await client.get(`/api/user/${userToFind!.id}`).loginAs(user!)
 
     response.assertStatus(200)
   })
