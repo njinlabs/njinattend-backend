@@ -64,4 +64,33 @@ export default class LocationsController {
 
     return location.serialize()
   }
+
+  public async update({ request, params }: HttpContextContract) {
+    const location = await Location.query()
+      .where('id', params.id)
+      .select(
+        '*',
+        Database.st().x('locations.geom').as('longitude'),
+        Database.st().y('locations.geom').as('latitude')
+      )
+      .firstOrFail()
+
+    const { name, address, longitude, latitude } = await request.validate({
+      schema: schema.create({
+        name: schema.string(),
+        address: schema.string(),
+        longitude: schema.number(),
+        latitude: schema.number(),
+      }),
+    })
+
+    location.name = name
+    location.address = address
+    location.geom = `Point(${longitude} ${latitude})`
+
+    await location.save()
+    await location.refresh()
+
+    return location.serialize()
+  }
 }

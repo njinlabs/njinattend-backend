@@ -33,6 +33,10 @@ Route.group(() => {
   }).prefix('/auth')
 
   Route.group(() => {
+    Route.put('/:id', 'LocationsController.update').middleware([
+      'auth:api',
+      'private:administrator',
+    ])
     Route.get('/:id', 'LocationsController.show').middleware(['auth:api', 'private:administrator'])
     Route.post('/', 'LocationsController.store').middleware(['auth:api', 'private:administrator'])
     Route.get('/', 'LocationsController.index').middleware(['auth:api', 'private:administrator'])
