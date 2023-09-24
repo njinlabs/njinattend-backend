@@ -34,4 +34,14 @@ test.group('User', () => {
       response.assertStatus(422)
     }
   })
+
+  test('Index user', async ({ client, assert }) => {
+    const user = await User.findBy('role', 'administrator')
+
+    assert.isTrue(Boolean(user))
+
+    const response = await client.get('/api/user').loginAs(user!)
+
+    response.assertStatus(200)
+  })
 })

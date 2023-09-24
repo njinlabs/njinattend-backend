@@ -47,4 +47,25 @@ export default class UsersController {
 
     return user.serialize()
   }
+
+  public async index({ request }: HttpContextContract) {
+    const { page = 1 } = await request.validate({
+      schema: schema.create({
+        page: schema.number.optional(),
+      }),
+    })
+
+    const limit = 20
+    const offset = (page - 1) * limit
+
+    const usersQuery = User.query()
+
+    const usersCount = await usersQuery.clone().count('* as total')
+    const users = await usersQuery.clone().offset(offset).limit(limit)
+
+    return {
+      page_count: Math.ceil(Number(usersCount[0].$extras.total) / limit),
+      rows: users.map((user) => user.serialize()),
+    }
+  }
 }
