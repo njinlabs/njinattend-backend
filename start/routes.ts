@@ -34,6 +34,7 @@ Route.group(() => {
 
   Route.group(() => {
     Route.post('/', 'LocationsController.store').middleware(['auth:api', 'private:administrator'])
+    Route.get('/', 'LocationsController.index').middleware(['auth:api', 'private:administrator'])
   }).prefix('/location')
 
   Route.group(() => {

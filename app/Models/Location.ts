@@ -16,8 +16,16 @@ export default class Location extends BaseModel {
     prepare: (value?: string) => {
       return value ? Database.st().geomFromText(value, 4326) : value
     },
+    serializeAs: null,
   })
   public geom: string
+
+  public serializeExtras() {
+    return {
+      longitude: this.$extras.longitude,
+      latitude: this.$extras.latitude,
+    }
+  }
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
