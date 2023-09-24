@@ -29,4 +29,16 @@ test.group('Location', () => {
 
     response.assertStatus(200)
   })
+
+  test('Location show', async ({ client, assert }) => {
+    const user = await User.findBy('role', 'administrator')
+    const locationToFind = await User.first()
+
+    assert.isTrue(Boolean(user))
+    assert.isTrue(Boolean(locationToFind))
+
+    const response = await client.get(`/api/user/${locationToFind!.id}`).loginAs(user!)
+
+    response.assertStatus(200)
+  })
 })

@@ -51,4 +51,17 @@ export default class LocationsController {
       rows: locations.map((location) => location.serialize()),
     }
   }
+
+  public async show({ params }: HttpContextContract) {
+    const location = await Location.query()
+      .where('id', params.id)
+      .select(
+        '*',
+        Database.st().x('locations.geom').as('longitude'),
+        Database.st().y('locations.geom').as('latitude')
+      )
+      .firstOrFail()
+
+    return location.serialize()
+  }
 }
