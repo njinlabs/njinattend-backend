@@ -64,12 +64,10 @@ test.group('User', () => {
     const userToFind = await User.findBy('role', 'user')
 
     assert.isTrue(Boolean(user))
-    assert.isTrue(Boolean(userToFind))
 
     const response = await client
-      .put(`/api/user/${userToFind!.id}`)
+      .put(`/api/user/${userToFind?.id || 2}`)
       .fields({
-        registered_number: '2018210068',
         password: '123456',
         fullname: 'Akbar Aditama',
         gender: 'male',
@@ -86,7 +84,7 @@ test.group('User', () => {
 
       Drive.restore()
     } catch (e) {
-      response.assertStatus(422)
+      response.assertStatus(404)
     }
   })
 

@@ -96,7 +96,7 @@ export default class UsersController {
       role,
     } = await request.validate({
       schema: schema.create({
-        registered_number: schema.string({}, [
+        registered_number: schema.string.optional({}, [
           rules.unique({
             table: 'users',
             column: 'registered_number',
@@ -114,7 +114,7 @@ export default class UsersController {
       }),
     })
 
-    user.registeredNumber = registeredNumber
+    if (registeredNumber) user.registeredNumber = registeredNumber
     user.fullname = fullname
     user.gender = gender as 'male' | 'female'
     user.birthday = birthday
@@ -123,6 +123,8 @@ export default class UsersController {
 
     if (password) user.password = password
     if (avatar) user.avatar = Attachment.fromFile(avatar)
+
+    await user.save()
 
     return user.serialize()
   }
