@@ -63,6 +63,7 @@
     "@tensorflow/tfjs-node": "^4.11.0",
     "@vladmandic/face-api": "^1.7.12",
     "canvas": "^2.11.2",
+    "knex-postgis": "^0.14.3",
     "luxon": "^3.4.3",
     "pg": "^8.11.3",
     "proxy-addr": "^2.0.7",
