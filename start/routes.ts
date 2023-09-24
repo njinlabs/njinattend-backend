@@ -33,6 +33,10 @@ Route.group(() => {
   }).prefix('/auth')
 
   Route.group(() => {
+    Route.post('/', 'LocationsController.store').middleware(['auth:api', 'private:administrator'])
+  }).prefix('/location')
+
+  Route.group(() => {
     Route.put('/:id/face', 'UsersController.saveFaceModel').middleware([
       'auth:api',
       'private:administrator',
