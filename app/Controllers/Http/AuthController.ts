@@ -40,4 +40,8 @@ export default class AuthController {
       ...user.serialize(),
     }
   }
+
+  public async checkToken({ auth }: HttpContextContract) {
+    return auth.use('api').user!.serialize()
+  }
 }

@@ -30,6 +30,8 @@ Route.group(() => {
       Route.get('/', 'AuthController.signIn')
       Route.delete('/', 'AuthController.signOut').middleware('auth:api')
     }).prefix('/sign')
+
+    Route.get('/check-token', 'AuthController.checkToken').middleware('auth:api')
   }).prefix('/auth')
 
   Route.group(() => {

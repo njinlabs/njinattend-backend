@@ -15,6 +15,16 @@ test.group('Auth', () => {
     }
   })
 
+  test('Check Token', async ({ client }) => {
+    const user = await User.first()
+
+    const response = await (user
+      ? client.delete('/api/auth/sign').loginAs(user)
+      : client.delete('/api/auth/sign'))
+
+    response.assertStatus(200)
+  })
+
   test('Sign Out', async ({ client }) => {
     const user = await User.first()
 
