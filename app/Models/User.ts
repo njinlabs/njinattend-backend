@@ -26,7 +26,9 @@ export default class User extends BaseModel {
   @column()
   public role: 'administrator' | 'user'
 
-  @attachment()
+  @attachment({
+    preComputeUrl: true,
+  })
   public avatar: AttachmentContract
 
   @column()
@@ -52,5 +54,11 @@ export default class User extends BaseModel {
   public static async removeFaceModel(user: User) {
     await user.load('face')
     await user.face?.delete()
+  }
+
+  public serializeExtras() {
+    return {
+      face: Boolean(this.face),
+    }
   }
 }

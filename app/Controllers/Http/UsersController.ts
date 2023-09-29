@@ -66,7 +66,7 @@ export default class UsersController {
     const usersQuery = User.query()
 
     const usersCount = await usersQuery.clone().count('* as total')
-    const users = await usersQuery.clone().offset(offset).limit(limit)
+    const users = await usersQuery.clone().preload('face').offset(offset).limit(limit)
 
     return {
       page_count: Math.ceil(Number(usersCount[0].$extras.total) / limit),
