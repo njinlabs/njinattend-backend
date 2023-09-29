@@ -152,7 +152,7 @@ export default class UsersController {
       extname: 'json',
       mimeType: 'application/json',
       size: Buffer.from(faceDescriptor.toString()).length,
-      name: `${cuid}.json`,
+      name: `${cuid()}.json`,
     })
 
     faceFile.isPersisted = true

@@ -1,5 +1,5 @@
 import '@tensorflow/tfjs-node'
-import faceapi from '@vladmandic/face-api'
+import * as faceapi from '@vladmandic/face-api'
 import { Canvas, Image, ImageData, loadImage } from 'canvas'
 import Application from '@ioc:Adonis/Core/Application'
 
