@@ -24,9 +24,15 @@ export default class LocationsController {
   }
 
   public async index({ request }: HttpContextContract) {
-    const { page = 1 } = await request.validate({
+    const {
+      page = 1,
+      latitude,
+      longitude,
+    } = await request.validate({
       schema: schema.create({
         page: schema.number.optional(),
+        latitude: schema.number.optional(),
+        longitude: schema.number.optional(),
       }),
     })
 
@@ -36,19 +42,40 @@ export default class LocationsController {
     const locationsQuery = Location.query()
 
     const locationsCount = await locationsQuery.clone().count('* as total')
-    const locations = await locationsQuery
-      .clone()
-      .select(
+
+    if (longitude && latitude) {
+      locationsQuery
+        .select(
+          'locations.*',
+          Database.st().x('locations.geom').as('longitude'),
+          Database.st().y('locations.geom').as('latitude'),
+          Database.st()
+            .distance(
+              'locations.geom',
+              Database.st().geomFromText(`Point(${longitude} ${latitude})`, 4326)
+            )
+            .as('distance')
+        )
+        .orderBy('distance', 'asc')
+    } else {
+      locationsQuery.select(
         '*',
         Database.st().x('locations.geom').as('longitude'),
         Database.st().y('locations.geom').as('latitude')
       )
-      .offset(offset)
-      .limit(limit)
+    }
+
+    const locations = await locationsQuery.clone().offset(offset).limit(limit)
 
     return {
       page_count: Math.ceil(Number(locationsCount[0].$extras.total) / limit),
-      rows: locations.map((location) => location.serialize()),
+      rows: locations.map((location) => {
+        if (latitude && longitude) {
+          location.setCurrentLatLng(latitude, longitude)
+        }
+
+        return location.serialize()
+      }),
     }
   }
 
