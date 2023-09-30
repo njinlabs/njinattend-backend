@@ -62,4 +62,8 @@ Route.group(() => {
     Route.get('/', 'UsersController.index').middleware(['auth:api', 'private:administrator'])
     Route.post('/', 'UsersController.store').middleware(['auth:api', 'private:administrator'])
   }).prefix('/user')
+
+  Route.group(() => {
+    Route.put('/in', 'AttendancesController.in').middleware(['auth:api'])
+  }).prefix('/attendance')
 }).prefix('/api')
