@@ -84,8 +84,10 @@ export default class AttendancesController {
       (await Attendance.query()
         .where('user_id', auth.use('api').user!.id)
         .where(
-          Database.raw("TO_CHAR(period AT TIME ZONE 'UTC', 'YYYY-MM-DD')"),
-          DateTime.now().toUTC().toFormat('yyyy-LL-dd')
+          Database.raw("TO_CHAR(period AT TIME ZONE :zone, 'YYYY-MM-DD')", {
+            zone: DateTime.now().zoneName!,
+          }),
+          DateTime.now().toFormat('yyyy-LL-dd')
         )
         .first()) || new Attendance()
 
@@ -128,8 +130,10 @@ export default class AttendancesController {
       (await Attendance.query()
         .where('user_id', auth.use('api').user!.id)
         .where(
-          Database.raw("TO_CHAR(period AT TIME ZONE 'UTC', 'YYYY-MM-DD')"),
-          DateTime.now().toUTC().toFormat('yyyy-LL-dd')
+          Database.raw("TO_CHAR(period AT TIME ZONE :zone, 'YYYY-MM-DD')", {
+            zone: DateTime.now().zoneName!,
+          }),
+          DateTime.now().toFormat('yyyy-LL-dd')
         )
         .first()) || new Attendance()
 
@@ -149,8 +153,10 @@ export default class AttendancesController {
       .user!.related('attendances')
       .query()
       .where(
-        Database.raw("TO_CHAR(period AT TIME ZONE 'UTC', 'YYYY-MM-DD')"),
-        DateTime.now().toUTC().toFormat('yyyy-LL-dd')
+        Database.raw("TO_CHAR(period AT TIME ZONE :zone, 'YYYY-MM-DD')", {
+          zone: DateTime.now().zoneName!,
+        }),
+        DateTime.now().toFormat('yyyy-LL-dd')
       )
       .preload('in_location')
       .preload('out_location')
@@ -182,6 +188,49 @@ export default class AttendancesController {
     return {
       page_count: Math.ceil(Number(attendancesCount[0].$extras.total) / limit),
       rows: attendances.map((attendances) => attendances.serialize()),
+    }
+  }
+
+  public async daily({ request }) {
+    const { page = 1, period = DateTime.now() } = await request.validate({
+      schema: schema.create({
+        page: schema.number.optional(),
+        period: schema.date.optional(),
+      }),
+    })
+
+    const limit = 20
+    const offset = (page - 1) * limit
+
+    const users = await User.query().offset(offset).limit(limit)
+    const attendancesCount = await User.query().count('* as total')
+
+    const attendances = await Attendance.query()
+      .where(
+        Database.raw("TO_CHAR(period AT TIME ZONE :zone, 'YYYY-MM-DD')", {
+          zone: period.zoneName,
+        }),
+        period.toFormat('yyyy-LL-dd')
+      )
+      .clone()
+      .preload('user')
+      .preload('in_location')
+      .preload('out_location')
+      .whereIn(
+        'attendances.user_id',
+        users.map((user) => user.id)
+      )
+
+    return {
+      page_count: Math.ceil(Number(attendancesCount[0].$extras.total) / limit),
+      rows: users.map((user) => {
+        const attendance = attendances.find((item) => item.userId === user.id)
+
+        return {
+          ...user.serialize(),
+          attendance,
+        }
+      }),
     }
   }
 }

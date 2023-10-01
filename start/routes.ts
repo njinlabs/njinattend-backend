@@ -69,5 +69,9 @@ Route.group(() => {
     Route.put('/out', 'AttendancesController.out').middleware(['auth:api'])
     Route.get('/today', 'AttendancesController.today').middleware(['auth:api'])
     Route.get('/history', 'AttendancesController.history').middleware(['auth:api'])
+    Route.get('/daily', 'AttendancesController.daily').middleware([
+      'auth:api',
+      'private:administrator',
+    ])
   }).prefix('/attendance')
 }).prefix('/api')

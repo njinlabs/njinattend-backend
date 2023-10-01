@@ -75,4 +75,14 @@ test.group('Attendance', () => {
 
     response.assertStatus(200)
   })
+
+  test('Get daily', async ({ client, assert }) => {
+    const user = await User.query().where('role', 'administrator').first()
+
+    assert.isTrue(Boolean(user))
+
+    const response = await client.get('/api/attendance/daily').loginAs(user!)
+
+    response.assertStatus(200)
+  })
 })
