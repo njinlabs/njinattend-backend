@@ -47,6 +47,8 @@ export default class AttendancesController {
     if (!FaceApi.matcher(faceRef, faceQuery)) {
       throw new Error('Face not match')
     }
+
+    return locations[0].id
   }
 
   public async in({ request, auth, response }: HttpContextContract) {
@@ -60,8 +62,14 @@ export default class AttendancesController {
       }),
     })
 
+    let locationId = 0
     try {
-      await this.validateInput(auth.use('api').user!, face.tmpPath!, latitude, longitude)
+      locationId = await this.validateInput(
+        auth.use('api').user!,
+        face.tmpPath!,
+        latitude,
+        longitude
+      )
     } catch (e) {
       return response.unprocessableEntity({
         message: (e as Error).message,
@@ -79,7 +87,8 @@ export default class AttendancesController {
 
     attendance.userId = auth.use('api').user?.id!
     attendance.period = DateTime.now()
-    attendance.in_record = DateTime.now()
+    attendance.inRecord = DateTime.now()
+    attendance.inLocationId = locationId
 
     await attendance.save()
 
@@ -97,8 +106,14 @@ export default class AttendancesController {
       }),
     })
 
+    let locationId = 0
     try {
-      await this.validateInput(auth.use('api').user!, face.tmpPath!, latitude, longitude)
+      locationId = await this.validateInput(
+        auth.use('api').user!,
+        face.tmpPath!,
+        latitude,
+        longitude
+      )
     } catch (e) {
       return response.unprocessableEntity({
         message: (e as Error).message,
@@ -116,9 +131,26 @@ export default class AttendancesController {
 
     attendance.userId = auth.use('api').user?.id!
     attendance.period = DateTime.now()
-    attendance.out_record = DateTime.now()
+    attendance.outRecord = DateTime.now()
+    attendance.outLocationId = locationId
 
     await attendance.save()
+
+    return attendance.serialize()
+  }
+
+  public async today({ auth }: HttpContextContract) {
+    const attendance = await auth
+      .use('api')
+      .user!.related('attendances')
+      .query()
+      .where(
+        Database.raw("TO_CHAR(period AT TIME ZONE 'UTC', 'YYYY-MM-DD')"),
+        DateTime.now().toUTC().toFormat('yyyy-LL-dd')
+      )
+      .preload('in_location')
+      .preload('out_location')
+      .firstOrFail()
 
     return attendance.serialize()
   }

@@ -1,8 +1,18 @@
 import { DateTime } from 'luxon'
 import Hash from '@ioc:Adonis/Core/Hash'
-import { column, beforeSave, BaseModel, hasOne, HasOne, beforeDelete } from '@ioc:Adonis/Lucid/Orm'
+import {
+  column,
+  beforeSave,
+  BaseModel,
+  hasOne,
+  HasOne,
+  beforeDelete,
+  hasMany,
+  HasMany,
+} from '@ioc:Adonis/Lucid/Orm'
 import { AttachmentContract, attachment } from '@ioc:Adonis/Addons/AttachmentLite'
 import Face from './Face'
+import Attendance from './Attendance'
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
@@ -36,6 +46,9 @@ export default class User extends BaseModel {
 
   @hasOne(() => Face)
   public face: HasOne<typeof Face>
+
+  @hasMany(() => Attendance)
+  public attendances: HasMany<typeof Attendance>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

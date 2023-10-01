@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, HasMany, column, hasMany } from '@ioc:Adonis/Lucid/Orm'
 import Database from '@ioc:Adonis/Lucid/Database'
+import Attendance from './Attendance'
 
 type LatLng = {
   latitude: number
@@ -70,6 +71,16 @@ export default class Location extends BaseModel {
           : undefined,
     }
   }
+
+  @hasMany(() => Attendance, {
+    foreignKey: 'inLocationId',
+  })
+  public in_attendances: HasMany<typeof Attendance>
+
+  @hasMany(() => Attendance, {
+    foreignKey: 'outLocationId',
+  })
+  public out_attendances: HasMany<typeof Attendance>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

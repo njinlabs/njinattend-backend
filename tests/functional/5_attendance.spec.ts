@@ -46,4 +46,18 @@ test.group('Attendance', () => {
       response.assertStatus(422)
     }
   })
+
+  test('Get today', async ({ client, assert }) => {
+    const user = await User.first()
+
+    assert.isTrue(Boolean(user))
+
+    const response = await client.get(`/api/attendance/today`).loginAs(user!)
+
+    try {
+      response.assertStatus(200)
+    } catch (e) {
+      response.assertStatus(404)
+    }
+  })
 })

@@ -7,6 +7,20 @@ export default class extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
       table.integer('user_id').unsigned().references('id').inTable('users').onDelete('cascade')
+      table
+        .integer('in_location_id')
+        .unsigned()
+        .nullable()
+        .references('id')
+        .inTable('locations')
+        .onDelete('set null')
+      table
+        .integer('out_location_id')
+        .unsigned()
+        .nullable()
+        .references('id')
+        .inTable('locations')
+        .onDelete('set null')
       table.dateTime('period', { useTz: true })
       table.dateTime('in_record', { useTz: true })
       table.dateTime('out_record', { useTz: true })
