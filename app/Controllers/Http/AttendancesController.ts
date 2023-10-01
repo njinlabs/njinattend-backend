@@ -85,4 +85,41 @@ export default class AttendancesController {
 
     return attendance.serialize()
   }
+
+  public async out({ request, auth, response }: HttpContextContract) {
+    const { face, longitude, latitude } = await request.validate({
+      schema: schema.create({
+        face: schema.file({
+          extnames: ['jpg', 'png'],
+        }),
+        longitude: schema.number(),
+        latitude: schema.number(),
+      }),
+    })
+
+    try {
+      await this.validateInput(auth.use('api').user!, face.tmpPath!, latitude, longitude)
+    } catch (e) {
+      return response.unprocessableEntity({
+        message: (e as Error).message,
+      })
+    }
+
+    const attendance =
+      (await Attendance.query()
+        .where('user_id', auth.use('api').user!.id)
+        .where(
+          Database.raw("TO_CHAR(period AT TIME ZONE 'UTC', 'YYYY-MM-DD')"),
+          DateTime.now().toUTC().toFormat('yyyy-LL-dd')
+        )
+        .first()) || new Attendance()
+
+    attendance.userId = auth.use('api').user?.id!
+    attendance.period = DateTime.now()
+    attendance.out_record = DateTime.now()
+
+    await attendance.save()
+
+    return attendance.serialize()
+  }
 }

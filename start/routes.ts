@@ -65,5 +65,6 @@ Route.group(() => {
 
   Route.group(() => {
     Route.put('/in', 'AttendancesController.in').middleware(['auth:api'])
+    Route.put('/out', 'AttendancesController.out').middleware(['auth:api'])
   }).prefix('/attendance')
 }).prefix('/api')

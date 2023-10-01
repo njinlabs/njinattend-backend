@@ -47,7 +47,9 @@ test.group('User', () => {
 
   test('User show', async ({ client, assert }) => {
     const user = await User.findBy('role', 'administrator')
-    const userToFind = await User.findBy('role', 'user')
+    const userToFind = await User.query()
+      .whereNot('id', user?.id || 0)
+      .first()
 
     assert.isTrue(Boolean(user))
     assert.isTrue(Boolean(userToFind))
@@ -61,7 +63,9 @@ test.group('User', () => {
     const fakeDrive = await Drive.fake()
     const fakeAvatar = await file.generatePng('1mb')
     const user = await User.findBy('role', 'administrator')
-    const userToFind = await User.findBy('role', 'user')
+    const userToFind = await User.query()
+      .whereNot('id', user?.id || 0)
+      .first()
 
     assert.isTrue(Boolean(user))
 
@@ -91,7 +95,9 @@ test.group('User', () => {
   test('Save user face model', async ({ client, assert }) => {
     const fakeAvatar = await file.generatePng('1mb')
     const user = await User.findBy('role', 'administrator')
-    const userToFind = await User.findBy('role', 'user')
+    const userToFind = await User.query()
+      .whereNot('id', user?.id || 0)
+      .first()
 
     assert.isTrue(Boolean(user))
 
@@ -109,7 +115,9 @@ test.group('User', () => {
 
   test('User destroy', async ({ client, assert }) => {
     const user = await User.findBy('role', 'administrator')
-    const userToFind = await User.findBy('role', 'user')
+    const userToFind = await User.query()
+      .whereNot('id', user?.id || 0)
+      .first()
 
     assert.isTrue(Boolean(user))
     assert.isTrue(Boolean(userToFind))
