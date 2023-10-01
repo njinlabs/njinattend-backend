@@ -74,4 +74,6 @@ Route.group(() => {
       'private:administrator',
     ])
   }).prefix('/attendance')
+
+  Route.get('/stats', 'StatsController.index').middleware(['auth:api', 'private:administrator'])
 }).prefix('/api')
