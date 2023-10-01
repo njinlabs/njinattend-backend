@@ -7,6 +7,7 @@ import FaceApi from 'App/Services/FaceApi'
 import Drive from '@ioc:Adonis/Core/Drive'
 import Face from 'App/Models/Face'
 import { cuid } from '@ioc:Adonis/Core/Helpers'
+import Hash from '@ioc:Adonis/Core/Hash'
 
 export default class UsersController {
   public async store({ request }: HttpContextContract) {
@@ -174,5 +175,31 @@ export default class UsersController {
 
       return faceModel.serialize()
     })
+  }
+
+  public async changePassword({ auth, request, response }: HttpContextContract) {
+    const { old_password: oldPassword, new_password: newPassword } = await request.validate({
+      schema: schema.create({
+        new_password: schema.string(),
+        old_password: schema.string(),
+      }),
+    })
+
+    let passed: boolean = false
+    const user = auth.use('api').user!
+    if (user) {
+      if (await Hash.verify(user.password, oldPassword)) {
+        passed = true
+      }
+    }
+
+    if (passed) {
+      user.password = newPassword
+      await user.save()
+
+      return user.serialize()
+    }
+
+    return response.unauthorized()
   }
 }

@@ -59,6 +59,26 @@ test.group('User', () => {
     response.assertStatus(200)
   })
 
+  test('Change password', async ({ client, assert }) => {
+    const user = await User.first()
+
+    assert.isTrue(Boolean(user))
+
+    const response = await client
+      .put(`/api/user/change-password`)
+      .qs({
+        old_password: '123456',
+        new_password: '123456',
+      })
+      .loginAs(user!)
+
+    try {
+      response.assertStatus(200)
+    } catch (e) {
+      response.assertStatus(401)
+    }
+  })
+
   test('User update', async ({ client, assert }) => {
     const fakeDrive = await Drive.fake()
     const fakeAvatar = await file.generatePng('1mb')

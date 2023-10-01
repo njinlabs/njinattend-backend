@@ -49,6 +49,7 @@ Route.group(() => {
   }).prefix('/location')
 
   Route.group(() => {
+    Route.put('/change-password', 'UsersController.changePassword').middleware(['auth:api'])
     Route.put('/:id/face', 'UsersController.saveFaceModel').middleware([
       'auth:api',
       'private:administrator',
