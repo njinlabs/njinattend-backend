@@ -22,6 +22,7 @@ import Route from '@ioc:Adonis/Core/Route'
 
 Route.group(() => {
   Route.group(() => {
+    Route.get('/check-installation', 'SettingsController.checkInstallation')
     Route.post('/setup-admin', 'SettingsController.storeInitialUser')
   }).prefix('/setting')
 

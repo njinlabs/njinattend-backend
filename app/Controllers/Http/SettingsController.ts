@@ -4,6 +4,12 @@ import { schema } from '@ioc:Adonis/Core/Validator'
 import User from 'App/Models/User'
 
 export default class SettingsController {
+  public async checkInstallation({ response }: HttpContextContract) {
+    const user = await User.first()
+
+    return user ? response.methodNotAllowed() : response.ok({})
+  }
+
   public async storeInitialUser({ response, request, auth }: HttpContextContract) {
     if (await User.first()) {
       return response.methodNotAllowed()

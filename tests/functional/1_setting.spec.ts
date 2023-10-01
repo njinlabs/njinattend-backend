@@ -3,6 +3,16 @@ import Drive from '@ioc:Adonis/Core/Drive'
 import { file } from '@ioc:Adonis/Core/Helpers'
 
 test.group('Setting', () => {
+  test('Check installation', async ({ client }) => {
+    const response = await client.get('/api/setting/check-installation')
+
+    try {
+      response.assertStatus(405)
+    } catch (e) {
+      response.assertStatus(200)
+    }
+  })
+
   test('Store initial user', async ({ client, assert }) => {
     const fakeDrive = await Drive.fake()
     const fakeAvatar = await file.generatePng('1mb')
