@@ -57,7 +57,7 @@ class FaceApi {
     const faceMatcher = new faceapi.FaceMatcher([referenceDescriptor])
     const match = faceMatcher.findBestMatch(queryDescriptor)
 
-    return match.distance < 0.6
+    return match.distance < 0.4
   }
 }
 

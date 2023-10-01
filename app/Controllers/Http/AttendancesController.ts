@@ -35,6 +35,10 @@ export default class AttendancesController {
       throw new Error("Can't reach attend point")
     }
 
+    if (!user.face) {
+      throw new Error('Face model not registered yet')
+    }
+
     const faceRef = FaceApi.loadFromString(
       (await Drive.get(user.face.file.name)).toString()
     ).descriptor
@@ -153,5 +157,31 @@ export default class AttendancesController {
       .firstOrFail()
 
     return attendance.serialize()
+  }
+
+  public async history({ request, auth }: HttpContextContract) {
+    const { page = 1 } = await request.validate({
+      schema: schema.create({
+        page: schema.number.optional(),
+      }),
+    })
+
+    const limit = 20
+    const offset = (page - 1) * limit
+
+    const attendancesQuery = auth.use('api').user!.related('attendances').query()
+
+    const attendancesCount = await attendancesQuery.clone().count('* as total')
+
+    const attendances = await attendancesQuery
+      .clone()
+      .offset(offset)
+      .limit(limit)
+      .orderBy('period', 'desc')
+
+    return {
+      page_count: Math.ceil(Number(attendancesCount[0].$extras.total) / limit),
+      rows: attendances.map((attendances) => attendances.serialize()),
+    }
   }
 }

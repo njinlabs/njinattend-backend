@@ -45,7 +45,7 @@ Route.group(() => {
     ])
     Route.get('/:id', 'LocationsController.show').middleware(['auth:api', 'private:administrator'])
     Route.post('/', 'LocationsController.store').middleware(['auth:api', 'private:administrator'])
-    Route.get('/', 'LocationsController.index').middleware(['auth:api', 'private:administrator'])
+    Route.get('/', 'LocationsController.index').middleware(['auth:api'])
   }).prefix('/location')
 
   Route.group(() => {
@@ -67,5 +67,6 @@ Route.group(() => {
     Route.put('/in', 'AttendancesController.in').middleware(['auth:api'])
     Route.put('/out', 'AttendancesController.out').middleware(['auth:api'])
     Route.get('/today', 'AttendancesController.today').middleware(['auth:api'])
+    Route.get('/history', 'AttendancesController.history').middleware(['auth:api'])
   }).prefix('/attendance')
 }).prefix('/api')
