@@ -9,13 +9,11 @@ export default class AppProvider {
 
   public async boot() {
     // IoC container is ready
+    await import('../start/face')
   }
 
   public async ready() {
     // App is ready
-    if (this.app.environment === 'web') {
-      await import('../start/face')
-    }
   }
 
   public async shutdown() {
