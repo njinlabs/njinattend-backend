@@ -62,14 +62,14 @@ export default class StatsController {
 
     return {
       charts,
-      in_records: attendancesCount[0].$extras.total_in
+      in_records: attendancesCount[0]?.$extras.total_in
         ? Number(attendancesCount[0].$extras.total_in)
-        : null,
-      out_records: attendancesCount[0].$extras.total_out
+        : 0,
+      out_records: attendancesCount[0]?.$extras.total_out
         ? Number(attendancesCount[0].$extras.total_out)
-        : null,
-      users: usersCount[0].$extras.users_count ? Number(usersCount[0].$extras.users_count) : 0,
-      locations: locationsCount[0].$extras.locations_count
+        : 0,
+      users: usersCount[0]?.$extras.users_count ? Number(usersCount[0].$extras.users_count) : 0,
+      locations: locationsCount[0]?.$extras.locations_count
         ? Number(locationsCount[0].$extras.locations_count)
         : 0,
     }

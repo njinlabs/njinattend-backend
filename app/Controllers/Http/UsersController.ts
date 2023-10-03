@@ -55,9 +55,10 @@ export default class UsersController {
   }
 
   public async index({ request }: HttpContextContract) {
-    const { page = 1 } = await request.validate({
+    const { page = 1, search } = await request.validate({
       schema: schema.create({
         page: schema.number.optional(),
+        search: schema.string.optional(),
       }),
     })
 
@@ -65,6 +66,11 @@ export default class UsersController {
     const offset = (page - 1) * limit
 
     const usersQuery = User.query()
+
+    if (search)
+      usersQuery.where((query) =>
+        query.whereILike('fullname', `%${search}%`).orWhereILike('registered_number', `%${search}%`)
+      )
 
     const usersCount = await usersQuery.clone().count('* as total')
     const users = await usersQuery.clone().preload('face').offset(offset).limit(limit)

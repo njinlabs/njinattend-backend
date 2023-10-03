@@ -28,11 +28,13 @@ export default class LocationsController {
       page = 1,
       latitude,
       longitude,
+      search,
     } = await request.validate({
       schema: schema.create({
         page: schema.number.optional(),
         latitude: schema.number.optional(),
         longitude: schema.number.optional(),
+        search: schema.string.optional(),
       }),
     })
 
@@ -40,6 +42,8 @@ export default class LocationsController {
     const offset = (page - 1) * limit
 
     const locationsQuery = Location.query()
+
+    if (search) locationsQuery.whereILike('name', `%${search}%`)
 
     const locationsCount = await locationsQuery.clone().count('* as total')
 
