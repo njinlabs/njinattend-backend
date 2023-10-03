@@ -55,8 +55,17 @@
     "youch-terminal": "^2.2.3"
   },
   "dependencies": {
+    "@adonisjs/attachment-lite": "^1.0.8",
+    "@adonisjs/auth": "^8.2.3",
     "@adonisjs/core": "^5.9.0",
+    "@adonisjs/lucid": "^18.4.1",
     "@adonisjs/repl": "^3.1.11",
+    "@tensorflow/tfjs-node": "^4.11.0",
+    "@vladmandic/face-api": "^1.7.12",
+    "canvas": "^2.11.2",
+    "knex-postgis": "^0.14.3",
+    "luxon": "^3.4.3",
+    "pg": "^8.11.3",
     "proxy-addr": "^2.0.7",
     "reflect-metadata": "^0.1.13",
     "source-map-support": "^0.5.21"
