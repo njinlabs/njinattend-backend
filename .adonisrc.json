@@ -13,6 +13,7 @@
     "Database": "database",
     "Contracts": "contracts"
   },
+  "metaFiles": ["./app/Services/FaceModels/**"],
   "preloads": ["./start/routes", "./start/db", "./start/kernel"],
   "providers": [
     "./providers/AppProvider",
