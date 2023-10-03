@@ -192,17 +192,28 @@ export default class AttendancesController {
   }
 
   public async daily({ request }) {
-    const { page = 1, period = DateTime.now() } = await request.validate({
+    const {
+      page = 1,
+      period = DateTime.now(),
+      search,
+    } = await request.validate({
       schema: schema.create({
         page: schema.number.optional(),
         period: schema.date.optional(),
+        search: schema.string.optional(),
       }),
     })
 
     const limit = 20
     const offset = (page - 1) * limit
 
-    const users = await User.query().offset(offset).limit(limit)
+    const usersQuery = User.query()
+    if (search)
+      usersQuery.where((query) =>
+        query.whereILike('fullname', `%${search}%`).orWhereILike('registered_number', `%${search}%`)
+      )
+
+    const users = await usersQuery.offset(offset).limit(limit)
     const attendancesCount = await User.query().count('* as total')
 
     const attendances = await Attendance.query()
