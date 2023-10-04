@@ -2,7 +2,7 @@
 
 NjinAttend is an open-source project for attendance management with face recognition and geolocation. The application is designed to facilitate accurate time and location tracking of user attendance.
 
-![NjinAttend Screenshot](screenshot.png)
+![NjinAttend Screenshot](https://attend.njintech.com/banner-1.png)
 
 ## Key Features
 
@@ -22,7 +22,8 @@ NjinAttend is an open-source project for attendance management with face recogni
 
 You can access the NjinAttend project demo directly via the following link:
 
-- [NjinAttend Demo](https://demo.njinattend.com)
+- [NjinAttend Dashboard Demo](https://attend.njintech.com)
+- [NjinAttend Android Demo (.apk)](https://attend.njintech.com/android.apk)
 
 This demo provides you with a firsthand look at the NjinAttend project's user interface. Feel free to try out the available features in the demo.
 
